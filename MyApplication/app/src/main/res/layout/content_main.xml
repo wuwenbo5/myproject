@@ -8,16 +8,65 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main" tools:context=".MainActivity">
-
-    <TextView
-        android:id="@+id/text"
-        android:text="Hello World!"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
     <Button
-        android:id="@+id/button"
+        android:id="@+id/thread_pool_1_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="发送广播"
-        android:layout_below="@id/text"/>
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="newFixedThreadPool 方式开启线程"/>
+
+    <Button
+        android:id="@+id/thread_pool_2_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="newSingleThreadExecutor 方式开启线程"/>
+
+    <Button
+        android:id="@+id/thread_pool_3_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="newCachedThreadPool 方式开启线程"/>
+
+    <Button
+        android:id="@+id/thread_pool_4_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="newScheduledThreadPool 方式开启线程"/>
+
+    <Button
+        android:id="@+id/thread_pool_5_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="newSingleThreadScheduledExecutor 方式开启线程"/>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</ScrollView>
+
+</LinearLayout>
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/rv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+
+
+    <!--</android.support.v7.widget.RecyclerView>-->
 </RelativeLayout>
