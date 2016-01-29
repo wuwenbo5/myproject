@@ -28,7 +28,13 @@ import android.widget.Toast;
 
 import com.example.test.myapplication.adapter.CommonAdapter;
 import com.example.test.myapplication.adapter.ViewHolder;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +49,7 @@ public class TestActivity extends Activity {
      * Called when the activity is first created.
      */
 
-    private GridView mListView;
+    private ListView mListView;
 
     private CommonAdapter mAdapter;
     private List<String> mDatas;
@@ -52,8 +58,9 @@ public class TestActivity extends Activity {
         super.onCreate(savedInstanceState);
 //        EventBus.getDefault().register(this);
         setContentView(R.layout.main_layout);
-        mListView = (GridView) findViewById(R.id.list_view);
-        mDatas = new ArrayList<String>(Arrays.asList("hello","你好","不好啊","yes?","ok?","是的啊"));
+        mListView = (ListView) findViewById(R.id.list_view);
+        mDatas = new ArrayList<String>(Arrays.asList("hello","你好","不好啊","yes?","ok?","是的啊",
+                "mm","秘密","啊啊啊","嗷嗷","o呵呵?","嘿嘿"));
         sonEventMainThread(mDatas);
         initDatas();
     }
@@ -62,26 +69,39 @@ public class TestActivity extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(1000);
-                    EventBus.getDefault().post(mDatas);
-                    EventBus.getDefault().post("弹出消息");
+                    OkHttpClient okHttpClient = new OkHttpClient ();
+                    Request request = new Request.Builder().url("https://www.baidu.com/index.php").build();
+                    Call response = okHttpClient.newCall(request);
+                    response.enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            Log.i("Response",e.toString());
+                        }
 
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            Log.i("Response", response.body().toString());
+                            mDatas.add(response.toString());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    });
             }
 
         }).start();
     }
 
 
+    int i=0;
     public void sonEventMainThread(List<String> datas){
         mListView.setAdapter(mAdapter = new CommonAdapter<String>(getApplicationContext(), mDatas,
                 R.layout.layout_item) {
             @Override
-            public void convert(ViewHolder helper, String item) {
+            public void convert(ViewHolder helper, final String item) {
                 TextView textView = helper.getView(R.id.tv);
                 textView.setText(item);
                 ImageView imageView = helper.getView(R.id.iv);
@@ -90,29 +110,33 @@ public class TestActivity extends Activity {
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        EventBus.getDefault().postSticky("通过EventBus弹出的消息");
+//                        mDatas.remove(item);
+//                        mAdapter.notifyDataSetChanged();
+                        Toast.makeText(TestActivity.this, "--TestActivity--", Toast.LENGTH_LONG).show();
                     }
                 });
+                Log.i("TestActivity","--------"+i++);
             }
         });
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                startActivity(new Intent(TestActivity.this,SecondActivity.class));
-                EventBus.getDefault().postSticky(mDatas.get(position));
+                startActivity(new Intent(TestActivity.this, SecondActivity.class));
+//                EventBus.getDefault().postSticky(mDatas.get(position));
 //                finish();
             }
         });
     }
     public void onEvent(String msg )
     {
-//        Toast.makeText(TestActivity.this,"onEventPostThread---"+msg,Toast.LENGTH_LONG).show();
+
+        Toast.makeText(TestActivity.this,"onEventPostThread---"+msg,Toast.LENGTH_LONG).show();
         Log.i("TAG", "--onEventPostThread--" + msg);
     }
-//    public void onEventMainThread(String msg){
-//        Toast.makeText(this,"onEventMainThread---"+msg,Toast.LENGTH_LONG).show();
-//    }
+    public void onEventMainThread(String msg){
+        Toast.makeText(this,"onEventMainThread---"+msg,Toast.LENGTH_LONG).show();
+    }
 
 //    public void onEventPostThread(String msg )
 //    {

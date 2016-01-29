@@ -16,8 +16,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +24,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -50,21 +52,57 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
 //                WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(new FoldeMenuView(this));
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-//        tv = (TextView) findViewById(R.id.text_view);
-//        initThreadPool();
-//        initListener();
-//        initData();
+        startActivity(new Intent(this,TestActivity.class));
+//            onRxJava();
+    }
+
+    private void onRxJava() {
+        Observable observable = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                subscriber.onNext("Hello");
+                subscriber.onNext("Hi");
+                subscriber.onNext("Aloha");
+                subscriber.onCompleted();
+            }
+        });
+        observable.subscribe(new Subscriber() {
+            @Override
+            public void onCompleted() {
+                showLongToast("完成");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+                showLongToast(o.toString());
+            }
+        });
+        Observer observer = new Observer() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        };
+        observable.subscribe(observer);
+    }
+
+    private void showLongToast(String s) {
+        Toast.makeText(this,s,Toast.LENGTH_LONG).show();
     }
 
     private void initListener() {
